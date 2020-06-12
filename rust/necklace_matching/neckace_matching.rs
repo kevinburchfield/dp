@@ -114,6 +114,10 @@ fn rotate_to_sort(necklace: &str) -> String {
             // Update the new best char
             best_char = vec[0];
         }
+
+        if (vec[0] as i32) == 97 {
+            break;
+        }
     }
     return best_string.unwrap();
 }
