@@ -22,7 +22,13 @@ fn main() -> io::Result<()> {
                         println!("Necklace \"{}\" repeats {} times", necklace, repeats(split[0]));
                     }
                     "bonus_2" => {
+                        // Prompt says one set of 4 words - implying a minimum length of 4
                         if necklace.len() >= 4 {
+
+                            /* Rotate a string to sort it by it's best possible rotation
+                            *  Create vector in map if not present
+                            *  Then push it in
+                            */
                             let rotated: String = rotate_to_sort(split[0]);
                             if word_map.get(&(rotated.clone())).is_none() {
                                 word_map.insert(rotated.clone(), Vec::new());
@@ -65,6 +71,7 @@ fn does_necklace_match((necklace, test): (&str, &str)) -> bool {
 }
 
 fn repeats(necklace: &str) -> i32 {
+    // 1 instances if the string is empty
     if necklace.is_empty() {
         return 1;
     }
@@ -72,10 +79,10 @@ fn repeats(necklace: &str) -> i32 {
     let mut test_string: String;
     let mut matches: i32 = 0;
     for i in 0..necklace.len() {
+        // Iterate through the string with a pivot. Move the front to the back and check if it matches
         let back = String::from(necklace.get(..i+1).unwrap());
         let front = String::from(necklace.get(i+1..).unwrap());
         test_string = front + &back;
-        println!("{}", test_string);
         if test_string == necklace {
             matches+=1;
         }
@@ -84,20 +91,27 @@ fn repeats(necklace: &str) -> i32 {
 }
 
 fn rotate_to_sort(necklace: &str) -> String {
-    let mut best_string: Option<String> = Some(String::from(""));
-    let mut best_char: char = 'z';
+    let mut best_string: Option<String> = Some(String::from("")); // Start with no best string
+    let mut best_char: char = 'z'; // Default to highest ASCII value char
     let mut test_string: String;
     for i in 0..necklace.len() {
+        // Rotate the string around a pivot like above
         let back = String::from(necklace.get(..i+1).unwrap());
         let front = String::from(necklace.get(i+1..).unwrap());
         test_string = front + &back;
 
+        // Compare the first char of the new rotation against the current best
+        // a = 97, z = 122 for instance
         let vec: Vec<char> = test_string.chars().collect();
         if (vec[0] as i32) < (best_char as i32) {
+
+            // Update Optional best string - Is this best to do? Seems hacky
             match best_string.as_mut() {
                 Some(v) => *v = test_string,
                 None => {},
             }
+            
+            // Update the new best char
             best_char = vec[0];
         }
     }
