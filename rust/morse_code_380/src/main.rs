@@ -35,24 +35,60 @@ fn main() {
         }
     }
 
-    print_vec!(code_map.get(&String::from("-...-....-.--.")).unwrap());
-
     // Execute tests
     match challenge_to_run as &str {
         "1" => {
-            println!("Not yet implemented.");
+            for (key, val) in code_map.iter() {
+                if val.len() == 13 {
+                    println!("Only sequence for 13 words: {}", key);
+                }
+            }
         }
         "2" => {
-            println!("Not yet implemented.");
+            for (key, val) in code_map.iter() {
+                // Possible to do regex for match?
+                if key.contains("---------------") {
+                    println!("Only word that encodes with 15 dashes in a row: {}", val[0]);
+                }
+            }
         }
         "3" => {
             println!("Not yet implemented.");
         }
         "4" => {
-            println!("Not yet implemented.");
+            for (key, val) in code_map.iter() {
+                if seq_is_palindrome(key) && val.iter().any(|w| w.len() == 13) {
+                    println!("The only 13 letter word that is a palindrome is: {}",
+                             val.iter().find(|w| w.len() == 13).unwrap());
+                }
+            }
         }
         "5" => {
-            println!("Not yet implemented.");
+            let possible_chars: Vec<&str> = vec![".", "-"];
+
+            let mut keys = code_map
+                .keys()
+                .filter(|k| k.len() == 13)
+                .cloned()
+                .collect::<Vec<String>>();
+
+            print_vec!(keys);
+            println!("{}", keys.len());
+
+            for x in 0..(2_usize.pow(13)) {
+                let mut string = String::from("");
+                let mut integer = x;
+
+                // Create a string based off of the binary presentation of the number mapped to chars
+                for _ in 0..13 {
+                    let char_index = integer % 2;
+                    integer = integer >> 1;
+                    string.push_str(possible_chars[char_index]);
+                }
+                if !keys.contains(&string) {
+                    // println!("13-size sequence not present: {}", string);
+                }
+            }
         }
         _ => {
             println!("Not a valid challenge.");
@@ -77,6 +113,30 @@ fn dot_dash(string: &str) -> String {
         .iter()
         .fold(String::from(""), |acc, c| acc + &get_morse_code(c));
     return code;
+}
+
+fn seq_is_palindrome(sequence: &str) -> bool {
+    let sequence_length = sequence.len();
+    return match sequence_length % 2 {
+        0 => {
+            let front = sequence.get(..(sequence_length / 2)).unwrap();
+            let mut back: Vec<char> = sequence.get((sequence_length / 2)..).unwrap().chars().collect();
+            back.reverse();
+            let rev_back: String = back.iter().collect();
+            front.eq(&rev_back)
+        },
+        1 => {
+            let front = sequence.get(..(sequence_length / 2)).unwrap();
+            let mut back: Vec<char> = sequence.get((sequence_length / 2) + 1..).unwrap().chars().collect();
+            back.reverse();
+            let rev_back: String = back.iter().collect();
+            front.eq(&rev_back)
+        },
+        _ => {
+            println!("This is literally not possible.");
+            false
+        }
+    }
 }
 
 fn get_morse_code(char: &char) -> String {
@@ -138,5 +198,13 @@ mod tests {
     #[test]
     fn test_three() {
         assert_eq!(dot_dash("three"), String::from("-.....-..."));
+    }
+
+    #[test]
+    fn test_seq_is_palindrome() {
+        assert!(seq_is_palindrome("..."));
+        assert!(seq_is_palindrome("--"));
+        assert!(!seq_is_palindrome("--."));
+        assert!(!seq_is_palindrome("--.-"));
     }
 }
