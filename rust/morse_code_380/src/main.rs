@@ -65,18 +65,9 @@ fn main() {
         }
         "5" => {
             let possible_chars: Vec<&str> = vec![".", "-"];
-
-            let mut keys = code_map
-                .keys()
-                .filter(|k| k.len() == 13)
-                .cloned()
-                .collect::<Vec<String>>();
-
-            print_vec!(keys);
-            println!("{}", keys.len());
-
+            let mut strings: Vec<String> = Vec::new();
             for x in 0..(2_usize.pow(13)) {
-                let mut string = String::from("");
+                let mut string = "".to_string();
                 let mut integer = x;
 
                 // Create a string based off of the binary presentation of the number mapped to chars
@@ -85,9 +76,7 @@ fn main() {
                     integer = integer >> 1;
                     string.push_str(possible_chars[char_index]);
                 }
-                if !keys.contains(&string) {
-                    // println!("13-size sequence not present: {}", string);
-                }
+                println!("{}", string.len());
             }
         }
         _ => {
